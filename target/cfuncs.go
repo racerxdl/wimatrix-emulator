@@ -10,6 +10,7 @@ var eeprom = make([]uint8, 16*1024*1024)
 //export goprintstring
 func goprintstring(str *C.char) {
 	gostr := C.GoString(str)
+
 	if redirectOut != nil {
 		redirectOut(gostr)
 	} else {

@@ -2,6 +2,7 @@
 #define ARDUINO_H
 
 #include <string>
+#include <compat/astring.h>
 
 #ifdef __cplusplus
 extern "C" {  // only need to export C interface if
@@ -15,7 +16,5 @@ void setup();
 #endif
 
 void delay(unsigned long);
-
-typedef std::string String;
 
 #endif

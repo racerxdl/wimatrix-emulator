@@ -1,4 +1,5 @@
-CXXFLAGS=-I../hal -fPIC -rdynamic
+CXXFLAGS=-I../hal -fPIC -g -rdynamic
+LDFLAGS=-shared
 PROJNAME = testserial
 INONAME = $(PROJNAME).ino
 BUILDFOLDER=./build
@@ -27,7 +28,7 @@ buildenv:
 link: buildenv $(OBJECTS)
 	@echo "Linking library"
 	$(eval HAL_OBJECTS := $(shell find ../hal -name "*.o"))
-	@$(CXX) -shared $(HAL_OBJECTS) $(OBJECTS) -o $(BUILDFOLDER)/$(PROJNAME).so
+	@$(CXX) $(LDFLAGS) $(HAL_OBJECTS) $(OBJECTS) -o $(BUILDFOLDER)/$(PROJNAME).so
 
 clean:
 	@echo "Erasing all build"

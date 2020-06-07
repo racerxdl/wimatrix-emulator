@@ -29,13 +29,23 @@ func removeEmpty(s []string) []string {
 	return r
 }
 
+var lineBuff = ""
+
 func stdout(line string) {
+	if strings.Index(line, "\n") == -1 {
+		// Buffer out
+		lineBuff += line
+		return
+	}
+
+	line = lineBuff + line
 	lines := removeEmpty(strings.Split(line, "\n"))
 	logLines = append(logLines, lines...)
 
 	if len(logLines) > maxLines {
 		logLines = logLines[len(logLines)-maxLines:]
 	}
+	lineBuff = ""
 }
 
 func MoveTo(x, y float64, s pixel.Picture) pixel.Matrix {
