@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 	"github.com/racerxdl/wimatrix-emulator/components/ledpanel"
+	"github.com/racerxdl/wimatrix-emulator/target"
 	"golang.org/x/image/colornames"
 )
 
@@ -15,7 +17,24 @@ func MoveTo(x, y float64, s *pixel.PictureData) pixel.Matrix {
 		Chained(screenOrigin)
 }
 
+func ArduinoLoop() {
+	for {
+		target.Loop()
+	}
+}
+
 func run() {
+
+	fmt.Println("Loading library")
+
+	err := target.Load("./testserial.so")
+	if err != nil {
+		panic(err)
+	}
+	target.Setup()
+
+	go ArduinoLoop()
+
 	cfg := pixelgl.WindowConfig{
 		Title:  "Wimatrix Emulator",
 		Bounds: pixel.R(0, 0, 1280, 720),
