@@ -10,14 +10,15 @@ package target
 #include <stdio.h>
 #include <dlfcn.h>
 
+extern void goprintstring(char *str);
 
-void *handle;
+static void *handle;
+static void (*loop)() = NULL;
+static void (*setup)() = NULL;
+static void (*setprintfunction)(void (*printfn)(char *)) = NULL;
 
-static void *(*loop)() = NULL;
-static void *(*setup)() = NULL;
 
 int loadLibrary(const char *libname) {
-    printf("LOADING %s\n", libname);
     handle = dlopen(libname, RTLD_LAZY | RTLD_GLOBAL);
     if (handle == NULL) {
         fprintf(stderr, "Error: %s\n", dlerror());
@@ -26,6 +27,11 @@ int loadLibrary(const char *libname) {
 
     loop = dlsym(handle, "loop");
     setup = dlsym(handle, "setup");
+    setprintfunction = dlsym(handle, "setprintfunction");
+
+    if (setprintfunction != NULL) {
+    	setprintfunction(goprintstring);
+    }
 
     return 0;
 }
