@@ -19,4 +19,4 @@
 *.so
 *.dll
 *.dysim
-target/testserial/testserial.cpp
+target/**/build

@@ -1,11 +1,12 @@
-CFLAGS=-I../hal -fPIC -rdynamic
+CXXFLAGS=-I../hal -fPIC -rdynamic
 PROJNAME = testserial
 INONAME = $(PROJNAME).ino
+BUILDFOLDER=./build
 CPPINONAME = $(INONAME:%.ino=%.cpp)
-SOURCES = $(shell find . -name "*.cpp")
+SOURCES = $(shell find $(BUILDFOLDER) -name "*.cpp" 2>>/dev/null)
 OBJECTS = $(SOURCES:%.cpp=%.o)
 
-all: link
+all: buildenv link
 
 %.o: %.cpp
 	@echo "Building $< -> $@"
@@ -15,20 +16,21 @@ hal:
 	@echo "Building Hardware Abstraction Layer"
 	@make -C ../hal
 
-inofile:
+buildenv:
+	@echo "Creating buildenv"
+	@mkdir -p $(BUILDFOLDER)
+	@cp -r *.cpp *.h $(BUILDFOLDER) 2>/dev/null || true;
 	@echo "Creating $(CPPINONAME)"
-	@cat ../hal/arduino.tpl $(INONAME) > $(CPPINONAME)
-	@$(CXX) -c -o $(PROJNAME).o $(CFLAGS) $(CPPINONAME)
+	@cat ../hal/arduino.tpl $(INONAME) > $(BUILDFOLDER)/$(CPPINONAME)
+	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $(BUILDFOLDER)/$(CPPINONAME:%.cpp=%.o) $(BUILDFOLDER)/$(CPPINONAME)
 
-link: inofile $(OBJECTS)
-	echo "Linking library"
+link: buildenv $(OBJECTS)
+	@echo "Linking library"
 	$(eval HAL_OBJECTS := $(shell find ../hal -name "*.o"))
-	$(CXX) -shared $(HAL_OBJECTS) $(OBJECTS) -o $(PROJNAME).so
+	@$(CXX) -shared $(HAL_OBJECTS) $(OBJECTS) -o $(BUILDFOLDER)/$(PROJNAME).so
 
 clean:
-	@echo "Erasing all .o files"
-	@rm -f *.o
-	@echo "Erasing $(CPPINONAME)"
-	@rm -f $(CPPINONAME)
+	@echo "Erasing all build"
+	@rm -fr build
 
-.PHONY: clean hal inofile link
+.PHONY: clean hal link

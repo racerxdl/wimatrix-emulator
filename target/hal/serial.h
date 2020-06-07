@@ -7,11 +7,11 @@ class EmulatedSerial {
 
 public:
   void begin(unsigned long baud) {
-    std::cout << "Serial.begin(" << baud << ")" << std::endl;
+    std::cout << "[HAL] Serial.begin(" << baud << ")" << std::endl;
   }
 
   void println(std::string str) {
-    std::cout << str << std::endl;
+    std::cout << "[SERIAL] " << str << std::endl;
   }
 
 };
