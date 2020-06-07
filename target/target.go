@@ -11,12 +11,16 @@ package target
 #include <dlfcn.h>
 
 extern void goprintstring(char *str);
+extern void seteepromdata(int addr, char val);
+extern char geteepromdata(int addr);
+extern void goprintstring(char *str);
 
 static void *handle;
 static void (*loop)() = NULL;
 static void (*setup)() = NULL;
 static void (*setprintfunction)(void (*printfn)(char *)) = NULL;
-
+static void (*setSetEEPROMData)(void (*seteeprom)(int addr, char data)) = NULL;
+static void (*setReadEEPROMData)(char (*readeeprom)(int addr)) = NULL;
 
 int loadLibrary(const char *libname) {
     handle = dlopen(libname, RTLD_LAZY | RTLD_GLOBAL);
@@ -28,9 +32,17 @@ int loadLibrary(const char *libname) {
     loop = dlsym(handle, "loop");
     setup = dlsym(handle, "setup");
     setprintfunction = dlsym(handle, "setprintfunction");
+    setSetEEPROMData = dlsym(handle, "setSetEEPROMData");
+    setReadEEPROMData = dlsym(handle, "setReadEEPROMData");
 
     if (setprintfunction != NULL) {
     	setprintfunction(goprintstring);
+    }
+    if (setSetEEPROMData != NULL) {
+    	setSetEEPROMData(seteepromdata);
+    }
+    if (setReadEEPROMData != NULL) {
+    	setReadEEPROMData(geteepromdata);
     }
 
     return 0;

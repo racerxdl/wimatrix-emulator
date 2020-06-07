@@ -1,6 +1,8 @@
 #ifndef ARDUINO_H
 #define ARDUINO_H
 
+#include <string>
+
 #ifdef __cplusplus
 extern "C" {  // only need to export C interface if
               // used by C++ source code
@@ -13,5 +15,7 @@ void setup();
 #endif
 
 void delay(unsigned long);
+
+typedef std::string String;
 
 #endif

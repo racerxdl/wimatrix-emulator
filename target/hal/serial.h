@@ -17,7 +17,14 @@ public:
 
   void println(std::string str) {
     std::stringstream ss;
-    ss << "[SERIAL] " << str << std::endl;
+    ss << str << std::endl;
+    std::string v = ss.str();
+    extprint(v.c_str());
+  }
+
+  void print(std::string str) {
+    std::stringstream ss;
+    ss << str;
     std::string v = ss.str();
     extprint(v.c_str());
   }
