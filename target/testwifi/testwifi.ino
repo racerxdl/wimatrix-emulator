@@ -44,8 +44,8 @@ void loop() {
     }
 
     String url = String(getParam);
-    // Serial.print("Requesting URL: ");
-    // Serial.println(url);
+    Serial.print("Requesting URL: ");
+    Serial.println(url);
         client.print(String("GET ") + url + " HTTP/1.1\r\n" +
                  "Host: " + host + "\r\n" +
                  "Connection: close\r\n\r\n");
@@ -59,10 +59,10 @@ void loop() {
     }
     while(client.available()) {
         String line = client.readStringUntil('\r');
-        // Serial.print(line);
+        Serial.print(line);
     }
 
-    // Serial.println();
-    // Serial.println("closing connection");
+    Serial.println();
+    Serial.println("closing connection");
     delay(5000);
 }
