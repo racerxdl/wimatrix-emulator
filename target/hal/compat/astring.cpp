@@ -175,6 +175,12 @@ String &String::operator+=(double num)          {
   return *this;
 }
 
+String String::operator + (const String &astr) {
+  String newStr = *this;
+  newStr += astr;
+  return newStr;
+}
+
 unsigned char String::operator < (const String &astr) const {
   return this->compare(astr) < 0;
 }
@@ -255,6 +261,8 @@ double String::toDouble(void) const {
 }
 
 
+
+
 // Helpers
 void String::toLowerCase(void) {
   std::transform(this->content.begin(), this->content.end(), this->content.begin(),
@@ -267,5 +275,5 @@ void String::toUpperCase(void) {
 }
 
 void String::trim(void) {
-
+  // TODO
 }

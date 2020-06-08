@@ -37,6 +37,7 @@ public:
   String &operator += (unsigned long num);
   String &operator += (float num);
   String &operator += (double num);
+  String operator +  (const String &astr);
 
   char operator[](int index) { return this->content[index]; }
 

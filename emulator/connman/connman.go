@@ -40,8 +40,9 @@ type connman struct {
 
 func MakeManager() Manager {
 	return &connman{
-		lock:     sync.Mutex{},
-		lastConn: -1,
+		lock:           sync.Mutex{},
+		lastConn:       -1,
+		connectionList: make(map[int]buffConn),
 	}
 }
 

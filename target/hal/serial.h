@@ -2,6 +2,7 @@
 #include <sstream>
 #include <ardext.h>
 #include <compat/astring.h>
+#include <compat/stringable.h>
 
 #ifndef SERIAL_H
 #define SERIAL_H
@@ -16,14 +17,29 @@ public:
     extprint(v.c_str());
   }
 
-  void println(String str) {
+  void println(const String str) {
     String linedString = str;
     linedString += "\n";
     extprint(linedString.c_str());
   }
 
-  void print(String str) {
+  void println(const Stringable &obj) {
+    String linedString = obj.toString();
+    linedString += "\n";
+    extprint(linedString.c_str());
+  }
+
+  void println() {
+    String linedString("\n");
+    extprint(linedString.c_str());
+  }
+
+  void print(const String str) {
     extprint(str.c_str());
+  }
+
+  void print(const Stringable &obj) {
+    extprint(obj.toString().c_str());
   }
 
 };

@@ -23,12 +23,20 @@ extern unsigned long    connpeek     (int fd);
 extern int              connavailable(int fd);
 
 // Loaded code functions
+#define FN_PRINT          0
+#define FN_SET_EEPROM     1
+#define FN_GET_EEPROM     2
+#define FN_CONN_CLOSE     3
+#define FN_CONN_OPEN      4
+#define FN_CONN_WRITE     5
+#define FN_CONN_READ      6
+#define FN_CONN_PEEK      7
+#define FN_CONN_AVAILABLE 8
+
 static void *handle;
 static void (*loop)() = NULL;
 static void (*setup)() = NULL;
-static void (*setprintfunction)(void (*printfn)(char *)) = NULL;
-static void (*setSetEEPROMData)(void (*seteeprom)(int addr, char data)) = NULL;
-static void (*setReadEEPROMData)(char (*readeeprom)(int addr)) = NULL;
+static void (*setFunction)(int functionId, void *func) = NULL;
 
 int loadLibrary(const char *libname) {
     handle = dlopen(libname, RTLD_LAZY | RTLD_GLOBAL);
@@ -39,18 +47,18 @@ int loadLibrary(const char *libname) {
 
     loop = dlsym(handle, "loop");
     setup = dlsym(handle, "setup");
-    setprintfunction = dlsym(handle, "setprintfunction");
-    setSetEEPROMData = dlsym(handle, "setSetEEPROMData");
-    setReadEEPROMData = dlsym(handle, "setReadEEPROMData");
+    setFunction = dlsym(handle, "setFunction");
 
-    if (setprintfunction != NULL) {
-    	setprintfunction(goprintstring);
-    }
-    if (setSetEEPROMData != NULL) {
-    	setSetEEPROMData(seteepromdata);
-    }
-    if (setReadEEPROMData != NULL) {
-    	setReadEEPROMData(geteepromdata);
+    if (setFunction != NULL) {
+    	setFunction(FN_PRINT, 			goprintstring);
+    	setFunction(FN_SET_EEPROM, 		seteepromdata);
+    	setFunction(FN_GET_EEPROM, 		geteepromdata);
+    	setFunction(FN_CONN_CLOSE, 		connclose);
+    	setFunction(FN_CONN_OPEN, 		connopen);
+    	setFunction(FN_CONN_WRITE, 		connwrite);
+    	setFunction(FN_CONN_READ, 		connread);
+    	setFunction(FN_CONN_PEEK, 		connpeek);
+    	setFunction(FN_CONN_AVAILABLE, 	connavailable);
     }
 
     return 0;

@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-const maxLines = 16
+const maxLines = 48
 
 var screenOrigin pixel.Matrix
 var visualConsole *text.Text
@@ -74,7 +74,8 @@ func run() {
 	fmt.Println("Loading library")
 	target.SetRedirectOut(stdout)
 
-	err := target.Load("./testserial.so")
+	//err := target.Load("./testserial.so")
+	err := target.Load("./testwifi.so")
 	if err != nil {
 		panic(err)
 	}
@@ -126,7 +127,7 @@ func run() {
 		pixel.NewSprite(panelPic, panelPic.Bounds()).
 			Draw(win, MoveTo(50, 50, panelPic))
 
-		visualConsole.Draw(win, pixel.IM.Moved(pixel.V(w-400, h-25)))
+		visualConsole.Draw(win, pixel.IM.Moved(pixel.V(w-500, h-25)))
 
 		win.Update()
 	}

@@ -16,5 +16,6 @@ void setup();
 #endif
 
 void delay(unsigned long);
+long millis();
 
 #endif
