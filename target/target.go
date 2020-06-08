@@ -10,11 +10,19 @@ package target
 #include <stdio.h>
 #include <dlfcn.h>
 
-extern void goprintstring(char *str);
-extern void seteepromdata(int addr, char val);
-extern char geteepromdata(int addr);
-extern void goprintstring(char *str);
+// Golang Functions
+extern void 			goprintstring(char *str);
+extern void 			seteepromdata(int addr, char val);
+extern char 			geteepromdata(int addr);
+extern void 			goprintstring(char *str);
+extern int  			connclose    (int fd);
+extern int  			connopen     (char *host, int port);
+extern unsigned long  	connwrite    (int fd, char *buf, unsigned long count);
+extern unsigned long    connread     (int fd, char *buf, unsigned long count);
+extern unsigned long    connpeek     (int fd);
+extern int              connavailable(int fd);
 
+// Loaded code functions
 static void *handle;
 static void (*loop)() = NULL;
 static void (*setup)() = NULL;
@@ -61,6 +69,7 @@ void arduSetup() {
 }
 */
 import "C"
+
 import (
 	"fmt"
 	"unsafe"
