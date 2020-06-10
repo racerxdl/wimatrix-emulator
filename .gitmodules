@@ -1,3 +1,6 @@
 [submodule "target/wimatrix"]
 	path = target/wimatrix
 	url = git@github.com:racerxdl/wimatrix.git
+[submodule "target/libraries/FastLED"]
+	path = target/libraries/FastLED
+	url = https://github.com/racerxdl/FastLED.git

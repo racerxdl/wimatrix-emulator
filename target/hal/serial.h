@@ -42,6 +42,19 @@ public:
     extprint(obj.toString().c_str());
   }
 
+  void print(const uint32_t val) {
+    extprint(String(val).c_str());
+  }
+
+  void write(const Stringable &obj) {
+    extprint(obj.toString().c_str());
+  }
+
+  void write(const uint8_t u) {
+    String str;
+    str += (char)u;
+    extprint(str.c_str());
+  }
 };
 
 extern EmulatedSerial Serial;

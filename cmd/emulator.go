@@ -9,7 +9,9 @@ import (
 	"github.com/racerxdl/wimatrix-emulator/target"
 	"golang.org/x/image/colornames"
 	"golang.org/x/image/font/basicfont"
+	"image/color"
 	"strings"
+	"sync"
 )
 
 const maxLines = 48
@@ -18,6 +20,7 @@ var screenOrigin pixel.Matrix
 var visualConsole *text.Text
 
 var logLines []string
+var panel *ledpanel.Panel
 
 func removeEmpty(s []string) []string {
 	var r []string
@@ -69,13 +72,38 @@ func updateConsole() {
 	}
 }
 
+var currentPixel = 0
+
+func putPixel(pixel uint32) {
+	if panel != nil {
+		panel.SetLedIdx(currentPixel, color.RGBA{
+			R: uint8((pixel >> 16) & 0xFF),
+			G: uint8((pixel >> 8) & 0xFF),
+			B: uint8((pixel >> 0) & 0xFF),
+			A: 255,
+		})
+	}
+	currentPixel++
+}
+
+var colorLock = sync.Mutex{}
+
+func endPanelUpdate() {
+	currentPixel = 0
+	if panel != nil {
+		colorLock.Lock()
+		panel.UpdateImage()
+		colorLock.Unlock()
+	}
+}
+
 func run() {
 
 	fmt.Println("Loading library")
 	target.SetRedirectOut(stdout)
-
 	//err := target.Load("./testserial.so")
-	err := target.Load("./testwifi.so")
+	//err := target.Load("./testwifi.so")
+	err := target.Load("./testled.so")
 	if err != nil {
 		panic(err)
 	}
@@ -93,11 +121,13 @@ func run() {
 		panic(err)
 	}
 
-	panel := ledpanel.MakePanel(30, 10)
+	panel = ledpanel.MakePanel(30, 10)
+	target.SetPutPixel(putPixel)
+	target.SetEndPanelUpdate(endPanelUpdate)
 
 	for x := 0; x < 30; x++ {
 		for y := 0; y < 10; y++ {
-			panel.SetLed(x, y, colornames.Fuchsia)
+			panel.SetLed(x, y, colornames.Black)
 		}
 	}
 
@@ -119,6 +149,7 @@ func run() {
 	h := r.Max.Y
 
 	for !win.Closed() {
+		colorLock.Lock()
 		updateConsole()
 
 		panelPic := panel.GetPictureData()
@@ -130,6 +161,7 @@ func run() {
 		visualConsole.Draw(win, pixel.IM.Moved(pixel.V(w-500, h-25)))
 
 		win.Update()
+		colorLock.Unlock()
 	}
 }
 

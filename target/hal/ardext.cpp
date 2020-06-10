@@ -13,6 +13,9 @@ static int              (*_connread     )(int fd, char *buf, int count) = NULL;
 static int              (*_connpeek     )(int fd) = NULL;
 static int              (*_connavailable)(int fd) = NULL;
 
+static void             (*_putpixel)(uint32_t pix) = NULL;
+static void             (*_endpanelupdate)() = NULL;
+
 void setFunction(int functionId, void *func) {
   switch (functionId) {
     case FN_PRINT:
@@ -41,6 +44,12 @@ void setFunction(int functionId, void *func) {
       break;
     case FN_CONN_AVAILABLE:
       _connavailable = (int (*)(int))func;
+      break;
+    case FN_PUT_PIXEL:
+      _putpixel = (void (*)(uint32_t))func;
+      break;
+    case FN_END_PANEL_UPDATE:
+      _endpanelupdate = (void (*)())func;
       break;
   }
 }
@@ -111,4 +120,17 @@ int extconnavailable(int fd)  {
   }
 
   return -1;
+}
+
+
+void extputpixel (uint32_t pix) {
+  if (_putpixel != NULL) {
+    _putpixel(pix);
+  }
+}
+
+void extendpanelupdate () {
+  if (_endpanelupdate != NULL) {
+    _endpanelupdate();
+  }
 }

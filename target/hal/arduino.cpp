@@ -10,3 +10,16 @@ long millis() {
   auto duration = std::chrono::system_clock::now().time_since_epoch();
   return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
 }
+
+long micros() {
+  auto duration = std::chrono::system_clock::now().time_since_epoch();
+  return std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
+}
+
+void pinMode(int, int) {
+  // Dummy
+}
+
+void yield() {
+  // Dummy
+}

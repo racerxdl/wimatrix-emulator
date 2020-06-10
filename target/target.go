@@ -11,27 +11,31 @@ package target
 #include <dlfcn.h>
 
 // Golang Functions
-extern void 			goprintstring(char *str);
-extern void 			seteepromdata(int addr, char val);
-extern char 			geteepromdata(int addr);
-extern void 			goprintstring(char *str);
-extern int  			connclose    (int fd);
-extern int  			connopen     (char *host, int port);
-extern unsigned long  	connwrite    (int fd, char *buf, unsigned long count);
-extern unsigned long    connread     (int fd, char *buf, unsigned long count);
-extern unsigned long    connpeek     (int fd);
-extern int              connavailable(int fd);
+extern void             goprintstring (char *str);
+extern void             seteepromdata (int addr, char val);
+extern char             geteepromdata (int addr);
+extern void             goprintstring (char *str);
+extern int              connclose     (int fd);
+extern int              connopen      (char *host, int port);
+extern unsigned long    connwrite     (int fd, char *buf, unsigned long count);
+extern unsigned long    connread      (int fd, char *buf, unsigned long count);
+extern unsigned long    connpeek      (int fd);
+extern int              connavailable (int fd);
+extern void             putpixel      (unsigned int color);
+extern void             endpanelupdate();
 
 // Loaded code functions
-#define FN_PRINT          0
-#define FN_SET_EEPROM     1
-#define FN_GET_EEPROM     2
-#define FN_CONN_CLOSE     3
-#define FN_CONN_OPEN      4
-#define FN_CONN_WRITE     5
-#define FN_CONN_READ      6
-#define FN_CONN_PEEK      7
-#define FN_CONN_AVAILABLE 8
+#define FN_PRINT             0
+#define FN_SET_EEPROM        1
+#define FN_GET_EEPROM        2
+#define FN_CONN_CLOSE        3
+#define FN_CONN_OPEN         4
+#define FN_CONN_WRITE        5
+#define FN_CONN_READ         6
+#define FN_CONN_PEEK         7
+#define FN_CONN_AVAILABLE    8
+#define FN_PUT_PIXEL         9
+#define FN_END_PANEL_UPDATE 10
 
 static void *handle;
 static void (*loop)() = NULL;
@@ -50,15 +54,17 @@ int loadLibrary(const char *libname) {
     setFunction = dlsym(handle, "setFunction");
 
     if (setFunction != NULL) {
-    	setFunction(FN_PRINT, 			goprintstring);
-    	setFunction(FN_SET_EEPROM, 		seteepromdata);
-    	setFunction(FN_GET_EEPROM, 		geteepromdata);
-    	setFunction(FN_CONN_CLOSE, 		connclose);
-    	setFunction(FN_CONN_OPEN, 		connopen);
-    	setFunction(FN_CONN_WRITE, 		connwrite);
-    	setFunction(FN_CONN_READ, 		connread);
-    	setFunction(FN_CONN_PEEK, 		connpeek);
-    	setFunction(FN_CONN_AVAILABLE, 	connavailable);
+        setFunction(FN_PRINT,               goprintstring);
+        setFunction(FN_SET_EEPROM,          seteepromdata);
+        setFunction(FN_GET_EEPROM,          geteepromdata);
+        setFunction(FN_CONN_CLOSE,          connclose);
+        setFunction(FN_CONN_OPEN,           connopen);
+        setFunction(FN_CONN_WRITE,          connwrite);
+        setFunction(FN_CONN_READ,           connread);
+        setFunction(FN_CONN_PEEK,           connpeek);
+        setFunction(FN_CONN_AVAILABLE,      connavailable);
+        setFunction(FN_PUT_PIXEL,           putpixel);
+        setFunction(FN_END_PANEL_UPDATE,    endpanelupdate);
     }
 
     return 0;

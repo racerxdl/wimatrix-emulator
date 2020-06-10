@@ -44,6 +44,10 @@ func (p *Panel) SetPixel(x, y int, c color.RGBA) {
 	p.pic.Pix[idx] = c
 }
 
+func (p *Panel) SetLedIdx(idx int, c color.RGBA) {
+	p.leds[idx] = c
+}
+
 func (p *Panel) drawLed(ox, oy int, c color.Color) {
 	r, g, b, a := c.RGBA()
 
