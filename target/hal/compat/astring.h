@@ -37,7 +37,7 @@ public:
   String &operator += (unsigned long num);
   String &operator += (float num);
   String &operator += (double num);
-  String operator +  (const String &astr);
+  String operator  +  (const String &astr);
 
   char operator[](int index) { return this->content[index]; }
 
@@ -49,6 +49,7 @@ public:
   unsigned char operator >  (const String &astr) const;
   unsigned char operator <= (const String &astr) const;
   unsigned char operator >= (const String &astr) const;
+  friend String operator  +  (const char *lhs, const String& rhs);
 
   // Comparison
   unsigned char equals(const String &s) const;

@@ -2,19 +2,20 @@
 #include <cstddef>
 #include <cstdio>
 
-static void             (*_printfn      )(const char *) = NULL;
-static void             (*_seteeprom    )(int addr, char data) = NULL;
-static char             (*_readeeprom   )(int addr) = NULL;
+static void             (*_printfn        )(const char *) = NULL;
+static void             (*_seteeprom      )(int addr, char data) = NULL;
+static char             (*_readeeprom     )(int addr) = NULL;
 
-static int              (*_connclose    )(int fd) = NULL;
-static int              (*_connopen     )(const char *host, int port) = NULL;
-static int              (*_connwrite    )(int fd, const char *buf, int count) = NULL;
-static int              (*_connread     )(int fd, char *buf, int count) = NULL;
-static int              (*_connpeek     )(int fd) = NULL;
-static int              (*_connavailable)(int fd) = NULL;
+static int              (*_connclose      )(int fd) = NULL;
+static int              (*_connopen       )(const char *host, int port) = NULL;
+static int              (*_connwrite      )(int fd, const char *buf, int count) = NULL;
+static int              (*_connread       )(int fd, char *buf, int count) = NULL;
+static int              (*_connpeek       )(int fd) = NULL;
+static int              (*_connavailable  )(int fd) = NULL;
+static int              (*_connsettimeout )(int fd, unsigned long millis) = NULL;
 
-static void             (*_putpixel)(uint32_t pix) = NULL;
-static void             (*_endpanelupdate)() = NULL;
+static void             (*_putpixel       )(uint32_t pix) = NULL;
+static void             (*_endpanelupdate )() = NULL;
 
 void setFunction(int functionId, void *func) {
   switch (functionId) {
@@ -50,6 +51,9 @@ void setFunction(int functionId, void *func) {
       break;
     case FN_END_PANEL_UPDATE:
       _endpanelupdate = (void (*)())func;
+      break;
+    case FN_CONN_SETTIMEOUT:
+      _connsettimeout = (int (*)(int, unsigned long))func;
       break;
   }
 }
@@ -133,4 +137,12 @@ void extendpanelupdate () {
   if (_endpanelupdate != NULL) {
     _endpanelupdate();
   }
+}
+
+int extconnsettimeout (int fd, unsigned long millis) {
+  if (_connsettimeout != NULL) {
+    return _connsettimeout(fd, millis);
+  }
+
+  return -1;
 }

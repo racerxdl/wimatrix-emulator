@@ -103,13 +103,11 @@ func run() {
 	target.SetRedirectOut(stdout)
 	//err := target.Load("./testserial.so")
 	//err := target.Load("./testwifi.so")
-	err := target.Load("./testled.so")
+	//err := target.Load("./testled.so")
+	err := target.Load("./testmqtt.so")
 	if err != nil {
 		panic(err)
 	}
-	target.Setup()
-
-	go ArduinoLoop()
 
 	cfg := pixelgl.WindowConfig{
 		Title:  "Wimatrix Emulator",
@@ -147,6 +145,10 @@ func run() {
 	r := win.Bounds()
 	w := r.Max.X
 	h := r.Max.Y
+
+	target.Setup()
+
+	go ArduinoLoop()
 
 	for !win.Closed() {
 		colorLock.Lock()

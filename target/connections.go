@@ -93,3 +93,16 @@ func connavailable(fd C.int) C.int {
 
 	return C.int(count)
 }
+
+//export connsettimeout
+func connsettimeout(fd C.int, millis C.ulong) C.int {
+	gofd := int(fd)
+	gomillis := uint64(millis)
+	err := connmanager.SetTimeout(gofd, gomillis)
+	if err != nil {
+		fmt.Printf("Error setting connection timeout %d: %s\n", gofd, err)
+		return C.int(0)
+	}
+
+	return C.int(1)
+}

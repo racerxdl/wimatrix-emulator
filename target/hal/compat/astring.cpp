@@ -123,7 +123,10 @@ String::String(double value, unsigned char decimalPlaces) {
   content = ss.str();
 }
 
-
+String &String::operator=(const String &astr) {
+  content = astr.content;
+  return *this;
+}
 
 String &String::operator+=(const String &astr)  {
   content += astr.content;
@@ -276,4 +279,8 @@ void String::toUpperCase(void) {
 
 void String::trim(void) {
   // TODO
+}
+
+String operator  +(const char *lhs, const String& rhs) {
+  return String(lhs) + rhs;
 }

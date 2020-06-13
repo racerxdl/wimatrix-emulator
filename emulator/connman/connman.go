@@ -14,6 +14,7 @@ type FdReader interface {
 	Read(fd int, data []byte) (n int, err error)
 	Peek(fd, n int) ([]byte, error)
 	Available(fd int) (int, error)
+	SetTimeout(fd int, millis uint64) error
 }
 
 type FdWriter interface {
@@ -33,7 +34,7 @@ type Manager interface {
 
 type connman struct {
 	lock           sync.Mutex
-	connectionList map[int]buffConn
+	connectionList map[int]*buffConn
 	lastConn       int
 	freeNumber     []int
 }
@@ -42,7 +43,7 @@ func MakeManager() Manager {
 	return &connman{
 		lock:           sync.Mutex{},
 		lastConn:       -1,
-		connectionList: make(map[int]buffConn),
+		connectionList: make(map[int]*buffConn),
 	}
 }
 
@@ -69,6 +70,17 @@ func (io *connman) Open(host string, port int) (fd int, err error) {
 	}
 
 	return fd, nil
+}
+
+func (io *connman) SetTimeout(fd int, millis uint64) error {
+	io.lock.Lock()
+	defer io.lock.Unlock()
+	if c, ok := io.connectionList[fd]; ok {
+		c.SetTimeout(millis)
+		return nil
+	}
+
+	return fmt.Errorf("no such connection %d", fd)
 }
 
 func (io *connman) Peek(fd, n int) ([]byte, error) {

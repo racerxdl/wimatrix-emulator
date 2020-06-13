@@ -14,6 +14,7 @@
 #define FN_CONN_AVAILABLE    8
 #define FN_PUT_PIXEL         9
 #define FN_END_PANEL_UPDATE 10
+#define FN_CONN_SETTIMEOUT  11
 
 #ifdef __cplusplus
 extern "C" {  // only need to export C interface if
@@ -33,6 +34,7 @@ int               extconnwrite      (int fd, const char *buf, int count);
 int               extconnread       (int fd, char *buf, int count);
 int               extconnpeek       (int fd);
 int               extconnavailable  (int fd);
+int               extconnsettimeout (int fd, unsigned long millis);
 
 void              extprint          (const char *);
 void              extseteeprom      (int addr, char data);

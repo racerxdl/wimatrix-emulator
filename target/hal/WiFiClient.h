@@ -2,8 +2,9 @@
 #define WIFICLIENT_H
 
 #include <compat/ipaddress.h>
+#include <Client.h>
 
-class WiFiClient {
+class WiFiClient : public Client {
 private:
   int fd;
 
@@ -23,9 +24,12 @@ public:
   void flush();
   void stop();
   uint8_t connected();
+  void setTimeout(unsigned long timeout);
+  size_t readBytes( char *buffer, size_t length);
 
   int print(const String &str);
   String readStringUntil(const char terminator);
-};
 
+  operator bool() { return this->connected() > 0; }
+};
 #endif

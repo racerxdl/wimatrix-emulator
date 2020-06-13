@@ -21,6 +21,7 @@ extern unsigned long    connwrite     (int fd, char *buf, unsigned long count);
 extern unsigned long    connread      (int fd, char *buf, unsigned long count);
 extern unsigned long    connpeek      (int fd);
 extern int              connavailable (int fd);
+extern int              connsettimeout(int fd, unsigned long millis);
 extern void             putpixel      (unsigned int color);
 extern void             endpanelupdate();
 
@@ -36,6 +37,7 @@ extern void             endpanelupdate();
 #define FN_CONN_AVAILABLE    8
 #define FN_PUT_PIXEL         9
 #define FN_END_PANEL_UPDATE 10
+#define FN_CONN_SETTIMEOUT  11
 
 static void *handle;
 static void (*loop)() = NULL;
@@ -65,6 +67,7 @@ int loadLibrary(const char *libname) {
         setFunction(FN_CONN_AVAILABLE,      connavailable);
         setFunction(FN_PUT_PIXEL,           putpixel);
         setFunction(FN_END_PANEL_UPDATE,    endpanelupdate);
+        setFunction(FN_CONN_SETTIMEOUT,     connsettimeout);
     }
 
     return 0;

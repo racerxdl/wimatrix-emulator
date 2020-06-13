@@ -4,3 +4,6 @@
 [submodule "target/libraries/FastLED"]
 	path = target/libraries/FastLED
 	url = https://github.com/racerxdl/FastLED.git
+[submodule "target/libraries/MQTT"]
+	path = target/libraries/MQTT
+	url = https://github.com/256dpi/arduino-mqtt.git

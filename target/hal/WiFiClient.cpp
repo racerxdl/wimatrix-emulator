@@ -102,3 +102,11 @@ String WiFiClient::readStringUntil(const char terminator) {
 
   return output;
 }
+
+void WiFiClient::setTimeout(unsigned long timeout) {
+  extconnsettimeout(this->fd, timeout);
+}
+
+size_t WiFiClient::readBytes(char *buffer, size_t length) {
+  return extconnread(this->fd, buffer, length);
+}
