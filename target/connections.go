@@ -59,7 +59,7 @@ func connread(fd C.int, buf *C.char, count C.int) C.int {
 	godata := (*[1 << 30]byte)(unsafe.Pointer(buf))[:count:count]
 	n, err := connmanager.Read(gofd, godata)
 	if err != nil {
-		fmt.Printf("Error writing to connection %d: %s\n", gofd, err)
+		fmt.Printf("Error readiing from connection %d: %s\n", gofd, err)
 		return 0
 	}
 
@@ -105,4 +105,61 @@ func connsettimeout(fd C.int, millis C.ulong) C.int {
 	}
 
 	return C.int(1)
+}
+
+//export connopenudp
+func connopenudp(host *C.char, port C.int) C.int {
+	goport := int(port)
+	gohost := C.GoString(host)
+
+	fd, err := connmanager.OpenUDP(gohost, goport)
+	if err != nil {
+		fmt.Printf("Error opening connection to %s:%d: %s\n", gohost, goport, err)
+		return C.int(-1)
+	}
+
+	return C.int(fd)
+}
+
+//export connreadpacket
+func connreadpacket(fd C.int, buf *C.char, buflen C.int, rhost *C.char, rhostlen C.int, rport *C.int) C.int {
+	gofd := int(fd)
+	godata := (*[1 << 30]byte)(unsafe.Pointer(buf))[:buflen:buflen]
+
+	gorhost := (*[1 << 30]byte)(unsafe.Pointer(rhost))[:rhostlen:rhostlen]
+	gorport := (*[1]int)(unsafe.Pointer(rport))[:1:1]
+
+	pkt, dst, err := connmanager.ReadPacket(gofd)
+	if err != nil {
+		//fmt.Printf("Error reading packet from connection %d: %s\n", gofd, err)
+		return 0
+	}
+
+	copy(gorhost, dst.IP.String())
+	gorport[0] = dst.Port
+
+	copy(godata, pkt)
+
+	n := len(pkt)
+	if n > int(buflen) {
+		n = int(buflen)
+	}
+
+	return C.int(n)
+}
+
+//export connwriteto
+func connwriteto(fd C.int, buf *C.char, count C.int, host *C.char, port C.int) C.int {
+	gofd := int(fd)
+	godata := C.GoBytes(unsafe.Pointer(buf), count)
+	gohost := C.GoString(host)
+	goport := int(port)
+
+	n, err := connmanager.WriteTo(gofd, gohost, goport, godata)
+	if err != nil {
+		//fmt.Printf("Error writing to (%s:%d) %d: %s\n", gohost, goport, gofd, err)
+		return 0
+	}
+
+	return C.int(n)
 }

@@ -8,6 +8,7 @@ import (
 
 type ConnectionOpener interface {
 	Open(host string, port int) (fd int, err error)
+	OpenUDP(host string, port int) (fd int, err error)
 }
 
 type FdReader interface {
@@ -15,10 +16,12 @@ type FdReader interface {
 	Peek(fd, n int) ([]byte, error)
 	Available(fd int) (int, error)
 	SetTimeout(fd int, millis uint64) error
+	ReadPacket(fd int) ([]byte, *net.UDPAddr, error)
 }
 
 type FdWriter interface {
 	Write(fd int, data []byte) (n int, err error)
+	WriteTo(fd int, host string, port int, data []byte) (int, error)
 }
 
 type FdCloser interface {
@@ -52,6 +55,39 @@ func (io *connman) Open(host string, port int) (fd int, err error) {
 	defer io.lock.Unlock()
 
 	c, err := net.Dial("tcp4", fmt.Sprintf("%s:%d", host, port))
+	if err != nil {
+		return -1, err
+	}
+
+	fd = io.lastConn + 1
+
+	if len(io.freeNumber) > 0 {
+		fd = io.freeNumber[0]
+		io.freeNumber = io.freeNumber[1:]
+	}
+
+	io.connectionList[fd] = newBufferedConn(c)
+
+	if fd > io.lastConn {
+		io.lastConn = fd
+	}
+
+	return fd, nil
+}
+
+func (io *connman) OpenUDP(host string, port int) (fd int, err error) {
+	io.lock.Lock()
+	defer io.lock.Unlock()
+
+	//ip := ResolveAddr(host)
+	//
+	//c, err := net.DialUDP("udp4", nil, &net.UDPAddr{
+	//    IP: ip,
+	//    Port: port,
+	//})
+	// TODO: BROKEN
+	c, err := net.Dial("udp4", fmt.Sprintf("%s:%d", host, port))
+
 	if err != nil {
 		return -1, err
 	}
@@ -118,6 +154,26 @@ func (io *connman) Read(fd int, data []byte) (n int, err error) {
 	defer io.lock.Unlock()
 	if c, ok := io.connectionList[fd]; ok {
 		return c.Read(data)
+	}
+
+	return 0, fmt.Errorf("no such connection %d", fd)
+}
+
+func (io *connman) ReadPacket(fd int) ([]byte, *net.UDPAddr, error) {
+	io.lock.Lock()
+	defer io.lock.Unlock()
+	if c, ok := io.connectionList[fd]; ok {
+		return c.ReadPacket()
+	}
+
+	return nil, nil, fmt.Errorf("no such connection %d", fd)
+}
+
+func (io *connman) WriteTo(fd int, host string, port int, data []byte) (int, error) {
+	io.lock.Lock()
+	defer io.lock.Unlock()
+	if c, ok := io.connectionList[fd]; ok {
+		return c.WriteTo(host, port, data)
 	}
 
 	return 0, fmt.Errorf("no such connection %d", fd)

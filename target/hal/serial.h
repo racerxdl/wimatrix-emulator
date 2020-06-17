@@ -29,6 +29,12 @@ public:
     extprint(linedString.c_str());
   }
 
+  void println(int obj) {
+    String linedString = String(obj);
+    linedString += "\n";
+    extprint(linedString.c_str());
+  }
+
   void println() {
     String linedString("\n");
     extprint(linedString.c_str());

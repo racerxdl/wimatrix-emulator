@@ -36,6 +36,11 @@ void pinMode(int, int);
 
 void yield();
 
+inline uint16_t makeWord(byte h, byte l) {
+  return (((uint16_t)h) << 8) + ((uint16_t)l);
+}
+
+#define word(...) makeWord(__VA_ARGS__)
 #endif
 
 

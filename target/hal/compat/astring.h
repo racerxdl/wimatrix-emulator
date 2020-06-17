@@ -3,6 +3,10 @@
 
 #include <string>
 
+#define HEX 16
+#define BIN 2
+#define OCT 8
+
 // Arduino Compatible String class with std::string container
 
 class String {
@@ -76,6 +80,30 @@ public:
 
   // std::string compat
   const char *c_str(void) const { return this->content.c_str(); }
+
+  int write(char c) {
+    content += c;
+    return 1;
+  }
+  int write(const uint8_t* s, size_t n) {
+    for (size_t i = 0; i < n; i++) {
+      content += s[i];
+    }
+    return n;
+  }
+
+  int read() {
+    if (!content.length()) {
+      return -1;
+    }
+    int c = content[0];
+    std::string copy = content;
+    content = std::string();
+    for (size_t i = 1; i < copy.length();i++) {
+      content += copy[i];
+    }
+    return c;
+  }
 
 private:
   std::string content;

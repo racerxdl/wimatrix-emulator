@@ -2,20 +2,23 @@
 #include <cstddef>
 #include <cstdio>
 
-static void             (*_printfn        )(const char *) = NULL;
-static void             (*_seteeprom      )(int addr, char data) = NULL;
-static char             (*_readeeprom     )(int addr) = NULL;
+static void             (*_printfn            )(const char *) = NULL;
+static void             (*_seteeprom          )(int addr, char data) = NULL;
+static char             (*_readeeprom         )(int addr) = NULL;
 
-static int              (*_connclose      )(int fd) = NULL;
-static int              (*_connopen       )(const char *host, int port) = NULL;
-static int              (*_connwrite      )(int fd, const char *buf, int count) = NULL;
-static int              (*_connread       )(int fd, char *buf, int count) = NULL;
-static int              (*_connpeek       )(int fd) = NULL;
-static int              (*_connavailable  )(int fd) = NULL;
-static int              (*_connsettimeout )(int fd, unsigned long millis) = NULL;
+static int              (*_connclose          )(int fd) = NULL;
+static int              (*_connopen           )(const char *host, int port) = NULL;
+static int              (*_connwrite          )(int fd, const char *buf, int count) = NULL;
+static int              (*_connread           )(int fd, char *buf, int count) = NULL;
+static int              (*_connpeek           )(int fd) = NULL;
+static int              (*_connavailable      )(int fd) = NULL;
+static int              (*_connsettimeout     )(int fd, unsigned long millis) = NULL;
 
-static void             (*_putpixel       )(uint32_t pix) = NULL;
-static void             (*_endpanelupdate )() = NULL;
+static void             (*_putpixel           )(uint32_t pix) = NULL;
+static void             (*_endpanelupdate     )() = NULL;
+static int              (*_connopenudp        )(const char *host, int port) = NULL;
+static int              (*_connreadpacket     )(int fd, char *buf, int buflen, char *rhost, int rhostlen, int *rport) = NULL;
+static int              (*_connwriteto        )(int fd, char *buf, int count, const char *host, int port) = NULL;
 
 void setFunction(int functionId, void *func) {
   switch (functionId) {
@@ -52,8 +55,14 @@ void setFunction(int functionId, void *func) {
     case FN_END_PANEL_UPDATE:
       _endpanelupdate = (void (*)())func;
       break;
-    case FN_CONN_SETTIMEOUT:
-      _connsettimeout = (int (*)(int, unsigned long))func;
+    case FN_CONN_OPENUDP:
+      _connopenudp = (int (*)(const char *, int))func;
+      break;
+    case FN_CONN_READPACKET:
+      _connreadpacket = (int (*)(int, char *, int, char *, int, int *))func;
+      break;
+    case FN_CONN_WRITETO:
+      _connwriteto = (int (*)(int, char *, int, const char *, int))func;
       break;
   }
 }
@@ -142,6 +151,31 @@ void extendpanelupdate () {
 int extconnsettimeout (int fd, unsigned long millis) {
   if (_connsettimeout != NULL) {
     return _connsettimeout(fd, millis);
+  }
+
+  return -1;
+}
+
+
+int extconnopenudp(const char *host, int port) {
+  if (_connopenudp != NULL) {
+    return _connopenudp(host, port);
+  }
+
+  return -1;
+}
+
+int extconnreadpacket(int fd, char *buf, int buflen, char *rhost, int rhostlen, int *rport) {
+  if (_connreadpacket != NULL) {
+    return _connreadpacket(fd, buf, buflen, rhost, rhostlen, rport) ;
+  }
+
+  return -1;
+}
+
+int extconnwriteto(int fd, char *buf, int count, const char *host, int port) {
+  if (_connwriteto != NULL) {
+    return _connwriteto(fd, buf, count, host, port);
   }
 
   return -1;

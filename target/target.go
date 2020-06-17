@@ -17,9 +17,12 @@ extern char             geteepromdata (int addr);
 extern void             goprintstring (char *str);
 extern int              connclose     (int fd);
 extern int              connopen      (char *host, int port);
-extern unsigned long    connwrite     (int fd, char *buf, unsigned long count);
-extern unsigned long    connread      (int fd, char *buf, unsigned long count);
-extern unsigned long    connpeek      (int fd);
+extern int              connopenudp   (char *host, int port);
+extern int              connwrite     (int fd, char *buf, int count);
+extern int    			connread      (int fd, char *buf, int count);
+extern int    			connreadpacket(int fd, char *buf, int buflen, char *rhost, int rhostlen, int *rport);
+extern int    			connwriteto   (int fd, char *buf, int count, char *host, int port);
+extern int    			connpeek      (int fd);
 extern int              connavailable (int fd);
 extern int              connsettimeout(int fd, unsigned long millis);
 extern void             putpixel      (unsigned int color);
@@ -38,6 +41,10 @@ extern void             endpanelupdate();
 #define FN_PUT_PIXEL         9
 #define FN_END_PANEL_UPDATE 10
 #define FN_CONN_SETTIMEOUT  11
+#define FN_CONN_OPENUDP  	12
+#define FN_CONN_READPACKET  13
+#define FN_CONN_WRITETO     14
+
 
 static void *handle;
 static void (*loop)() = NULL;
@@ -68,6 +75,9 @@ int loadLibrary(const char *libname) {
         setFunction(FN_PUT_PIXEL,           putpixel);
         setFunction(FN_END_PANEL_UPDATE,    endpanelupdate);
         setFunction(FN_CONN_SETTIMEOUT,     connsettimeout);
+        setFunction(FN_CONN_OPENUDP,     	connopenudp);
+        setFunction(FN_CONN_READPACKET,     connreadpacket);
+        setFunction(FN_CONN_WRITETO,     	connwriteto);
     }
 
     return 0;

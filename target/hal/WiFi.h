@@ -15,6 +15,13 @@ public:
   IPAddress localIP();
 
   static int status();
+
+  const char *getHostname() { return "EMULATOR"; }
+  const char *macAddress() { return "00:00:00:00:00:00"; }
+  String SSID() { return "DUMMY"; }
+  int RSSI() { return -50; }
+  IPAddress gatewayIP() { return IPAddress("10.0.0.1"); }
+  IPAddress subnetMask() { return IPAddress("255.255.255.0"); }
 };
 
 #include <WiFiClient.h>

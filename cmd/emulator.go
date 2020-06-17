@@ -104,7 +104,8 @@ func run() {
 	//err := target.Load("./testserial.so")
 	//err := target.Load("./testwifi.so")
 	//err := target.Load("./testled.so")
-	err := target.Load("./testmqtt.so")
+	//err := target.Load("./testmqtt.so")
+	err := target.Load("./testntp.so")
 	if err != nil {
 		panic(err)
 	}

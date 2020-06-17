@@ -12,12 +12,12 @@ private:
         uint8_t bytes[4];  // IPv4 address
         uint32_t dword;
     } address;
-
 public:
     IPAddress() : IPAddress(0,0,0,0) {}
     IPAddress(uint8_t b0, uint8_t b1, uint8_t b2, uint8_t b3);
     IPAddress(uint32_t address);
     IPAddress(const uint8_t *address);
+    IPAddress(const char *address);
 
     bool fromString(const char *address);
     bool fromString(const String &address) { return fromString(address.c_str()); }
@@ -36,6 +36,10 @@ public:
     IPAddress& operator=(uint32_t address);
 
     virtual String toString() const;
+
+    uint8_t* raw_address() {
+        return address.bytes;
+    }
 };
 
 #endif

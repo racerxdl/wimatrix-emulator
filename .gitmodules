@@ -7,3 +7,9 @@
 [submodule "target/libraries/MQTT"]
 	path = target/libraries/MQTT
 	url = https://github.com/256dpi/arduino-mqtt.git
+[submodule "target/libraries/ArduinoJson"]
+	path = target/libraries/ArduinoJson
+	url = https://github.com/bblanchon/ArduinoJson.git
+[submodule "target/libraries/NTPClient"]
+	path = target/libraries/NTPClient
+	url = https://github.com/arduino-libraries/NTPClient.git
